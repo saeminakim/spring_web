@@ -44,29 +44,26 @@ public class BoardController {
 	
 	/**
 	 * 등록/수정 처리
-	 * @param board
+	 * @param parameter
 	 */
 	@GetMapping("/save")
-	public int save(Board board) {
-		boardService.save(board);
-		return board.getBoardSeq();
+	public int save(Board parameter) {
+		boardService.save(parameter);
+		return parameter.getBoardSeq();
 	}
-	
-	/**
-	 * 업데이트 처리
-	 * @param board
-	 */
-	@GetMapping("/delete/{boardSeq}")
-	public void update(@PathVariable Board board) {
-		boardService.update(board);
-	}
-	
+
 	/**
 	 * 삭제 처리
 	 * @param boardSeq
 	 */
-	public void delete(int boardSeq) {
+	@GetMapping("/delete/{boardSeq}")
+	public boolean delete(@PathVariable int boardSeq) {
+		Board board = boardService.get(boardSeq);
+		if(board == null) {
+			return false;
+		}
 		boardService.delete(boardSeq);
+		return true;
 	}
 	
 }

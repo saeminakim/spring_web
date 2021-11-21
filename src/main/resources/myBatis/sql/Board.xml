@@ -8,7 +8,7 @@
 		B.TITLE,
 		B.CONTENTS,
 		B.REG_DATE
-		FROM T_BOARD B
+		FROM BOARD B
 		ORDER BY B.REG_DATE DESC
 	</select>
 	
@@ -18,12 +18,12 @@
 		B.TITLE,
 		B.CONTENTS,
 		B.REG_DATE
-		FROM T_BOARD B
+		FROM BOARD B
 		WHERE B.BOARD_SEQ = #{boardSeq}
 	</select>
 	
 	<insert id="save" parameterType="com.example.mvc.domain.Board" useGeneratedKeys="true" keyProperty="boardSeq">
-		INSERT INTO T_BOARD
+		INSERT INTO BOARD
 		(
 		 	TITLE,
 			CONTENTS,
@@ -38,7 +38,7 @@
 	</insert>
 	
 	<update id="update" parameterType="com.example.mvc.domain.Board">
-		UPDATE T_BOARD
+		UPDATE BOARD
 		SET
 			TITLE = #{title},
 			CONTENTS = #{contents}
@@ -46,8 +46,8 @@
 	</update>
 	
 	<delete id="delete" parameterType="int">
-		DELETE FROM T_BOARD
-		WHERE B.BOARD_SEQ = #{boardSeq}
+		DELETE FROM BOARD
+		WHERE BOARD_SEQ = #{boardSeq}
 	</delete>
 
 	

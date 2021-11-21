@@ -15,7 +15,7 @@ import com.example.mvc.repository.BoardRepository;
  */
 @Service
 public class BoardService {
-	
+
 	@Autowired
 	private BoardRepository repository;
 
@@ -26,7 +26,7 @@ public class BoardService {
 	public List<Board> getList() {
 		return repository.getList();
 	}
-	
+
 	/**
 	 * 상세 정보 리턴
 	 * @param boardSeq
@@ -35,24 +35,21 @@ public class BoardService {
 	public Board get(int boardSeq) {
 		return repository.get(boardSeq);
 	}
-	
+
 	/**
 	 * 등록 처리
 	 * @param board
 	 */
-	public int save(Board board) {
-		repository.save(board);
-		return board.getBoardSeq();
+	public void save(Board parameter) {
+		// 조회하여 리턴된 정보
+		Board board = repository.get(parameter.getBoardSeq());
+		if(board == null) {
+			repository.save(parameter);
+		} else {
+			repository.update(parameter);
+		}
 	}
-	
-	/**
-	 * 업데이트 처리
-	 * @param board
-	 */
-	public void update(Board board) {
-		repository.update(board);
-	}
-	
+
 	/**
 	 * 삭제 처리
 	 * @param boardSeq
@@ -60,5 +57,5 @@ public class BoardService {
 	public void delete(int boardSeq) {
 		repository.delete(boardSeq);
 	}
-	
+
 }

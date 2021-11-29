@@ -2,13 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.mvc.repository.BoardRepository">
-	<select id="getList" parameterType="com.example.mvc.domain.Board" resultType="com.example.mvc.domain.Board">
+	<select id="getList" parameterType="com.example.mvc.parameter.BoardSearchParameter" resultType="com.example.mvc.domain.Board">
 		SELECT
 		B.BOARD_SEQ,
 		B.TITLE,
 		B.CONTENTS,
 		B.REG_DATE
 		FROM BOARD B
+		<where>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotEmpty(keyword)">
+			AND B.TITLE LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+		</where>
 		ORDER BY B.REG_DATE DESC
 	</select>
 	

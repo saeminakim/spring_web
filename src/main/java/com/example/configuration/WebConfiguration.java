@@ -1,16 +1,19 @@
 package com.example.configuration;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.MediaType;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.example.configuration.servlet.handler.BaseHandlerInterceptor;
+import com.example.framework.data.web.MySQLPageRequestHandleMethodArgumentResolver;
 import com.example.mvc.domain.BaseCodeLabelEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -54,5 +57,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 		jsonView.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		jsonView.setObjectMapper(objectMapper());
 		return jsonView;
+	}
+	
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		// 페이지 리졸버 등록
+		resolvers.add(new MySQLPageRequestHandleMethodArgumentResolver());
 	}
 }

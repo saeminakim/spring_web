@@ -59,6 +59,11 @@ public class WebConfiguration implements WebMvcConfigurer {
 		return jsonView;
 	}
 	
+	@Bean
+	public GlobalConfig config() {
+		return new GlobalConfig();
+	}
+	
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		// 페이지 리졸버 등록

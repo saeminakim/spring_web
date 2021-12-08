@@ -2,12 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.mvc.repository.BoardRepository">
-	<select id="getList" parameterType="com.example.framework.data.domain.PageRequestParameter" resultType="com.example.mvc.domain.Board">
+
+	<resultMap type="com.example.mvc.domain.Board" id="getListresultMap">
+		<result column="DEL_YN" property="delYn" typeHandler="com.example.configuration.mybatis.typehandler.StringValueBooleanTypeHanlder"/>
+	</resultMap>
+	
+	<select id="getList" parameterType="com.example.framework.data.domain.PageRequestParameter" resultMap="getListresultMap">
 		SELECT
 		B.BOARD_SEQ,
 		B.TITLE,
 		B.CONTENTS,
-		B.REG_DATE
+		B.REG_DATE,
+		B.DEL_YN
 		FROM BOARD B
 		<where>
 			<!-- 키워드 검색 -->
@@ -40,15 +46,19 @@
 	<insert id="save" parameterType="com.example.mvc.parameter.BoardParameter" useGeneratedKeys="true" keyProperty="boardSeq">
 		INSERT INTO BOARD
 		(
+			BOARD_TYPE,
 		 	TITLE,
 			CONTENTS,
-			REG_DATE
+			REG_DATE,
+			DEL_YN
 		)
 		VALUES
 		(
+			#{boardType.code},
 			#{title},
 			#{contents},
-			NOW()
+			NOW(),
+			#{delYn, typeHandler=com.example.configuration.mybatis.typehandler.StringValueBooleanTypeHanlder}
 		)
 	</insert>
 	

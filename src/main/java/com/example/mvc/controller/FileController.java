@@ -2,6 +2,7 @@ package com.example.mvc.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ import com.example.configuration.GlobalConfig;
 import com.example.configuration.exception.BaseException;
 import com.example.configuration.http.BaseResponse;
 import com.example.configuration.http.BaseResponseCode;
+import com.example.mvc.parameter.UploadFileParameter;
+import com.example.mvc.service.UploadFileService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +35,9 @@ public class FileController {
 	@Autowired
 	private GlobalConfig config;
 	
+	@Autowired
+	private UploadFileService uploadFileService;
+	
 	@PostMapping("/save")
 	@ApiOperation(value = "업로드", notes = "")
 	public BaseResponse<Boolean> save(@RequestParam("uploadFile") MultipartFile multipartFile) {
@@ -42,13 +48,11 @@ public class FileController {
 			throw new BaseException(BaseResponseCode.DATA_IS_NULL);
 		}
 		
-		String uploadFilePath = config.getUploadFilePath();
+		// 날짜 폴더를 추가
+		String currentData = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+		String uploadFilePath = config.getUploadFilePath() + currentData + "/";
 		logger.debug("uploadFilePath : {}", uploadFilePath);
-		
-		if(config.isProd()) {
-			logger.debug("isProd calendar : {}", Calendar.getInstance());
-		}
-		
+
 		String prefix = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".") + 1, multipartFile.getOriginalFilename().length());
 		String fileName = UUID.randomUUID().toString() + "." + prefix;
 		logger.info("fileName : {}", fileName);
@@ -60,9 +64,27 @@ public class FileController {
 		}
 		
 		String pathName = uploadFilePath + fileName;
+		String resourcePathName = config.getUploadResourcePath() + currentData + "/" + fileName;
 		File dest = new File(pathName);
 		try {
 			multipartFile.transferTo(dest);
+			// 파일업로드 된 후 DB에 저장
+			UploadFileParameter parameter = new UploadFileParameter();
+			// 컨텐츠 종류
+			parameter.setContentType(multipartFile.getContentType());
+			// 원본 파일명
+			parameter.setOriginalFileName(multipartFile.getOriginalFilename());
+			// 저장 파일명
+			parameter.setFileName(fileName);
+			// 실제 파일 저장 경로
+			parameter.setPathName(pathName);
+			// 파일크기
+			parameter.setSize((int)multipartFile.getSize());
+			// static resource 접근 경로
+			parameter.setResourcePathName(resourcePathName);
+			
+			uploadFileService.save(parameter);
+			
 		} catch (IllegalStateException | IOException e) {
 			logger.error("e",e);
 		}
